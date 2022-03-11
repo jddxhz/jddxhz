@@ -89,6 +89,29 @@ class Http extends CustomAxios {
         }})
     }
 
+    public Jsonp<T>(url: string, params: T, cbName: string = 'callback') {
+        return new Promise<any>((resolve, reject) => {
+            const paramString = Object.keys(params).map(key => {
+                return `${key}=${this.GetProp(params, key)}`
+            }).join('&')
+    
+            const script = document.createElement('script')
+            script.type = 'text'
+            script.setAttribute('src', `${url}?${paramString}`)             
+            script.onload = () => {
+                resolve(script.text)
+                document.body.removeChild(script)
+            }
+    
+            const callback = this.GetProp(window, cbName)
+            this.SetProp(window, cbName, (e: any) => {
+                resolve(script.text)
+                this.SetProp(window, cbName, callback)
+            })
+            document.body.appendChild(script)
+        })
+    }
+
     private Action<T>(method: Method, url: string, data: T, config?: object) {
         this.loading()
         const params = ['GET'].includes(method) ? { url, method, params: data, ...config } : { url, method, data, ...config }

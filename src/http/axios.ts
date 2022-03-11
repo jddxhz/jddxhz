@@ -123,12 +123,12 @@ class CustomAxios {
         return res
     }
 
-    private GetProp<T>(o: unknown, k: string, v?: T): T {
+    protected GetProp<T>(o: unknown, k: string, v?: T): T {
         const discr = Object.getOwnPropertyDescriptor(o, k)
         return discr?.value ?? v
     }
 
-    private SetProp(o: unknown, k: string, v: unknown) {
+    protected SetProp(o: unknown, k: string, v: unknown) {
         Object.defineProperty(o, k, {
             value: v,
             writable: true,
